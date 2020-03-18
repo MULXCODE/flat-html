@@ -228,20 +228,20 @@ function shuffle(a) {
 // Sam Squire
 var template = {
     "data": [
-        "-div 'My post'",
-        "-div.mesgs div.mesg_history div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p 'My post'",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date 'time'",
-        "div.mesgs div.mesg_history div.received_msg span.blah 'Mixed '",
-        "div.mesgs div.mesg_history div.received_msg span.blah 'elements '",
-        "div.mesgs div.mesg_history div.received_msg b 'go down a treat'",
+        "-div =My post",
+        "-div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
+        "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
+        "div.mesgs div.mesg_history div.received_msg span.blah =elements ",
+        "div.mesgs div.mesg_history div.received_msg b =go down a treat",
 		
-		"-div.mesgs div.mesg_history div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p 'My post'",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date 'time'",
-        "div.mesgs div.mesg_history div.received_msg span.blah 'Mixed '",
-        "div.mesgs div.mesg_history div.received_msg span.blah 'elements '",
-        "div.mesgs div.mesg_history div.received_msg b 'go down a treat'"
+		"-div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
+        "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
+        "div.mesgs div.mesg_history div.received_msg span.blah =elements ",
+        "div.mesgs div.mesg_history div.received_msg b =go down a treat"
 		
     ]
 }
@@ -260,7 +260,8 @@ function renderFlatHtml(template) {
 	
 	for (let i = 0 ; i < data.length ; i++) {
 		var currentLine = data[i];
-		var textNodes = currentLine.split("'");
+		var textNodes = currentLine.split("=");
+		console.log(textNodes);
 		var processingNodes = textNodes[0].split(" ");
 		for (let token of processingNodes) {
 			created[token] = false;
@@ -271,7 +272,7 @@ function renderFlatHtml(template) {
 	for (let i = 0 ; i < data.length ; i++) {
 		var pivot = false;
 		var currentLine = data[i];
-		var textNodes = currentLine.split("'");
+		var textNodes = currentLine.split("=");
 		var pendingText = null;
 		if (textNodes.length > 0) {
 			pendingText = textNodes[1];
@@ -380,11 +381,11 @@ function renderFlatHtml(template) {
 					var nodeData = processingNodes[j].split("(");
 					var kvs = nodeData[1].split(")")[0].split(",");
 					var attrs = {"className": className, key: Math.random()};
-					console.log(kv);
+					console.log(kvs);
 					
 					for (var kv of kvs) {
-						var sides = kv.split("=");
-						attrs[sides[0]] = sides[1];
+						var sides = kv.split(":");
+						attrs[sides[0]] = sides.slice(1).join(":");
 					}
 					textNode = React.createElement(nodeData[0], attrs);
 				}
