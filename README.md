@@ -1,5 +1,5 @@
 # flat-html
-This repository is an unfinished project to render HTML from a flatter representation of HTML that looks like this:
+This repository renders HTML from a flatter representation of HTML that looks like this:
 
 ```
 {
