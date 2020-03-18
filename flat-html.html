@@ -229,8 +229,8 @@ function shuffle(a) {
 var template = {
     "data": [
 	"-div 'My post'",
-	"-div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png)",
-	"-div.received_msg div.received_withd_msg p '{{post[0]}}'",
+	"-div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
+	"-div.received_msg div.received_withd_msg p 'My post'",
 	"div.received_msg div.received_withd_msg span.time_date 'time'",
 	"div.received_msg div.blah 'Blah'"
     ]
@@ -266,9 +266,12 @@ function renderFlatHtml(template) {
 		if (textNodes.length > 0) {
 			pendingText = textNodes[1];
 		}
+		console.log(textNodes);
 		var processingNodes = textNodes[0].split(" ");
-		processingNodes.pop();
-		// console.log(processingNodes);
+		if (processingNodes[processingNodes.length - 1] == "") {
+			processingNodes.pop();
+		}
+		console.log(processingNodes);
 		
 		if (memo.hasOwnProperty(textNodes[0])) {
 			
@@ -302,7 +305,6 @@ function renderFlatHtml(template) {
 		for (let j = 0; j < processingNodes.length ; j++) {
 			var path = "";
 			for (let m = 0 ; m <= j; m++) {
-				console.log(m, j);
 				path += processingNodes[m].replace("-", "") + " ";
 			}
 			
@@ -358,13 +360,24 @@ function renderFlatHtml(template) {
 			}
 			console.log(path);
 			if (path == "") { debugger }
-			if (path == "div ") { debugger }
-			if (path == "div.received_msg ") { debugger }
-			if (path == "div.received_msg div.received_withd_msg ") { debugger }
-			
+			if (path == "div.incoming_msg_img img(src=https://ptetutorials.com/images/userprofile.png) ") { debugger }
 
 			if (end == true) {
-				var textNode = React.createElement(element, {key: pendingText, "className": className}, pendingText);
+				var textNode = "";
+				if (pendingText != null) {
+					var textNode = React.createElement(element, {key: pendingText, "className": className}, pendingText);
+				} else {
+					var nodeData = processingNodes[j].split("(");
+					var kvs = nodeData[1].split(")")[0].split(",");
+					var attrs = {"className": className};
+					console.log(kv);
+					for (var kv of kvs) {
+						var sides = kv.split("=");
+						attrs[sides[0]] = sides[1];
+					}
+					textNode = React.createElement(nodeData[0], attrs);
+					debugger
+				}
 				if (previousPath != "") {
 					childrenLookups[previousPath].push(textNode);
 				}
