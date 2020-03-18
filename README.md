@@ -1,4 +1,7 @@
 # flat-html
+
+flat-html is an alternative to templating and helpful in debugging complicated HTML. You can use cursor tools of your text editor to rename classes in columns mode.
+
 This repository renders HTML from a flatter representation of HTML that looks like this:
 
 ```
@@ -11,7 +14,7 @@ This repository renders HTML from a flatter representation of HTML that looks li
         "div.mesgs div.mesg_history div.received_msg span.blah 'elements '",
         "div.mesgs div.mesg_history div.received_msg b 'go down a treat'",
 		
-		"-div.mesgs div.mesg_history div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
+	"-div.mesgs div.mesg_history div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p 'My post'",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date 'time'",
         "div.mesgs div.mesg_history div.received_msg span.blah 'Mixed '",
@@ -20,7 +23,7 @@ This repository renders HTML from a flatter representation of HTML that looks li
 		
     ]
 ```
-It's an alternative to templating and helpful in debugging complicated HTML. You can use cursor tools of your text editor to rename classes in columns mode.
+
 
 It should generate HTML like this:
 
