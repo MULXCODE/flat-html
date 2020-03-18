@@ -26,3 +26,7 @@ Should generate HTML like this:
     </div>
 </div>
 ```
+
+# Usage
+
+Open `flat-html.html` in your browser and give it a whirl. There's an editor at the top of the screen so you can see what your flat HTML is generating below.
