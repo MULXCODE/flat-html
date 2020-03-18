@@ -228,14 +228,11 @@ function shuffle(a) {
 // Sam Squire
 var template = {
     "data": [
-        "-div.received_messages p 'hi'",
-        "div.received_messages span 'yo'",
-        "-div.blah div.blah div.blah 'hi'",
-        "div.blah div.blah div.blah 'yellow'",
-         
-        "-ul li span p 'hi'",
-        "ul li span p 'two'",
-        "-ul li span p 'three'"
+	"-div 'My post'",
+	"-div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png)",
+	"-div.received_msg div.received_withd_msg p '{{post[0]}}'",
+	"div.received_msg div.received_withd_msg span.time_date 'time'",
+	"div.received_msg div.blah 'Blah'"
     ]
 }
 
@@ -249,6 +246,7 @@ function renderFlatHtml(template) {
 	var childrenLookups = {};
 	var created = {};
 	var done = {};
+	var childs = {};
 	
 	for (let i = 0 ; i < data.length ; i++) {
 		var currentLine = data[i];
@@ -303,7 +301,8 @@ function renderFlatHtml(template) {
 		
 		for (let j = 0; j < processingNodes.length ; j++) {
 			var path = "";
-			for (var m = 0 ; m <= j ; m++) {
+			for (let m = 0 ; m <= j; m++) {
+				console.log(m, j);
 				path += processingNodes[m].replace("-", "") + " ";
 			}
 			
@@ -338,14 +337,14 @@ function renderFlatHtml(template) {
 			if (elements.charAt(0) == "-") {
 				elements = elements.substring(1);
 				freshNode = true;
-				var path = "";
+				var subpath = "";
 				for (let j = 0; j < processingNodes.length ; j++) {
-					path += processingNodes[j].replace("-", "") + " ";
-					console.log("RESETTING", path);
-					childrenLookups[path] = [];
+					subpath += processingNodes[j].replace("-", "") + " ";
+					console.log("RESETTING", subpath);
+					childrenLookups[subpath] = [];
 					
 					created[processingNodes[j]] = false;
-					done[path] = false;
+					done[subpath] = false;
 					
 				}
 			}
@@ -357,12 +356,18 @@ function renderFlatHtml(template) {
 				pivotPoint = path;
 				
 			}
-			if (path == "div.received_messages span ") { debugger }
-			if (path == "div.received_messages ") { debugger }
+			console.log(path);
+			if (path == "") { debugger }
+			if (path == "div ") { debugger }
+			if (path == "div.received_msg ") { debugger }
+			if (path == "div.received_msg div.received_withd_msg ") { debugger }
+			
 
 			if (end == true) {
 				var textNode = React.createElement(element, {key: pendingText, "className": className}, pendingText);
-				childrenLookups[path].push(textNode);
+				if (previousPath != "") {
+					childrenLookups[previousPath].push(textNode);
+				}
 				console.log(childrenLookups[path]);
 				created[element] = true;
 				done[path] = true;
@@ -372,11 +377,9 @@ function renderFlatHtml(template) {
 			} else if (j == 0 && freshNode) {
 				console.log("Creating parent", path);
 				childrenLookups[nextPath] = [];
-				children.push(React.createElement(element, {className: className}, childrenLookups[nextPath]));
+				children.push(React.createElement(element, {className: className}, childrenLookups[path]));
 				created[element] = true;
 				done[path] = true;
-			} else if (j == 0) {
-				childrenLookups[path].push(React.createElement(element, {className: className}, childrenLookups[path]));
 			} else if (done[path] === true) {
 				console.log("Already created", path);
 				console.log(element);
@@ -384,7 +387,7 @@ function renderFlatHtml(template) {
 				
 			} else {
 				
-					childrenLookups[path].push(React.createElement(element, {className: className}, childrenLookups[nextPath]));
+					childrenLookups[previousPath].push(React.createElement(element, {className: className}, childrenLookups[path]));
 					done[path] = true;
 				
 				
