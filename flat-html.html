@@ -24,7 +24,7 @@
 		float: left;
 		top: 0px;
 		width: 100vw;
-		height: 30vh;
+		height: 50vh;
 	}
 	#output {
 		width: 100%;
@@ -234,7 +234,15 @@ var template = {
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date 'time'",
         "div.mesgs div.mesg_history div.received_msg span.blah 'Mixed '",
         "div.mesgs div.mesg_history div.received_msg span.blah 'elements '",
+        "div.mesgs div.mesg_history div.received_msg b 'go down a treat'",
+		
+		"-div.mesgs div.mesg_history div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p 'My post'",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date 'time'",
+        "div.mesgs div.mesg_history div.received_msg span.blah 'Mixed '",
+        "div.mesgs div.mesg_history div.received_msg span.blah 'elements '",
         "div.mesgs div.mesg_history div.received_msg b 'go down a treat'"
+		
     ]
 }
 
@@ -342,13 +350,13 @@ function renderFlatHtml(template) {
 				elements = elements.substring(1);
 				freshNode = true;
 				var subpath = "";
-				for (let j = 0; j < processingNodes.length ; j++) {
+				for (var key in childrenLookups) {
 					subpath += processingNodes[j].replace("-", "") + " ";
-					console.log("RESETTING", subpath);
-					childrenLookups[subpath] = [];
-					
+					console.log("RESETTING", key);
+					childrenLookups[key] = [];
+					console.log("reset", JSON.stringify(childrenLookups));
 					created[processingNodes[j]] = false;
-					done[subpath] = false;
+					done[key] = false;
 					
 				}
 			}
@@ -361,18 +369,19 @@ function renderFlatHtml(template) {
 				
 			}
 			console.log(path);
-			if (path == "") { debugger }
-			if (path == "div.incoming_msg_img img(src=https://ptetutorials.com/images/userprofile.png) ") { debugger }
+			if (path == "div.mesgs ") {  }
+			if (path == "div.incoming_msg_img img(src=https://ptetutorials.com/images/userprofile.png) ") {  }
 
 			if (end == true) {
 				var textNode = "";
 				if (pendingText != null) {
-					var textNode = React.createElement(element, {key: pendingText, "className": className}, pendingText);
+					var textNode = React.createElement(element, {key: Math.random(), "className": className}, pendingText);
 				} else {
 					var nodeData = processingNodes[j].split("(");
 					var kvs = nodeData[1].split(")")[0].split(",");
-					var attrs = {"className": className};
+					var attrs = {"className": className, key: Math.random()};
 					console.log(kv);
+					
 					for (var kv of kvs) {
 						var sides = kv.split("=");
 						attrs[sides[0]] = sides[1];
@@ -389,19 +398,30 @@ function renderFlatHtml(template) {
 					children.push(textNode);
 				}
 			} else if (j == 0 && freshNode) {
+			
+				
+				console.log("reset", JSON.stringify(childrenLookups));
+				
 				console.log("Creating parent", path);
 				childrenLookups[nextPath] = [];
-				children.push(React.createElement(element, {className: className}, childrenLookups[path]));
+				children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
 				created[element] = true;
 				done[path] = true;
+				
+				
+				
+			
+				
+				
+				
 			} else if (done[path] === true) {
 				console.log("Already created", path);
 				console.log(element);
 				
 				
 			} else {
-				
-					childrenLookups[previousPath].push(React.createElement(element, {className: className}, childrenLookups[path]));
+					if (previousPath == "") { debugger }
+					childrenLookups[previousPath].push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
 					done[path] = true;
 				
 				
