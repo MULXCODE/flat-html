@@ -14,8 +14,9 @@ This repository renders HTML from a flatter representation of HTML that looks li
     ]
 }
 ```
+It's an alternative to templating and helpful in debugging complicated HTML. You can use cursor tools of your text editor to rename classes in columns mode.
 
-Should generate HTML like this:
+It should generate HTML like this:
 
 ```
 <div>
