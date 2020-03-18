@@ -228,11 +228,13 @@ function shuffle(a) {
 // Sam Squire
 var template = {
     "data": [
-	"-div 'My post'",
-	"-div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
-	"-div.received_msg div.received_withd_msg p 'My post'",
-	"div.received_msg div.received_withd_msg span.time_date 'time'",
-	"div.received_msg div.blah 'Blah'"
+        "-div 'My post'",
+        "-div.mesgs div.mesg_history div.incoming_msg_img img(src=https://ptetutorials.com/images/user-profile.png,alt=sam)",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p 'My post'",
+        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date 'time'",
+        "div.mesgs div.mesg_history div.received_msg span.blah 'Mixed '",
+        "div.mesgs div.mesg_history div.received_msg span.blah 'elements '",
+        "div.mesgs div.mesg_history div.received_msg b 'go down a treat'"
     ]
 }
 
@@ -376,7 +378,6 @@ function renderFlatHtml(template) {
 						attrs[sides[0]] = sides[1];
 					}
 					textNode = React.createElement(nodeData[0], attrs);
-					debugger
 				}
 				if (previousPath != "") {
 					childrenLookups[previousPath].push(textNode);
