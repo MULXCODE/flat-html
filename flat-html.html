@@ -70,6 +70,8 @@ function shuffle(a) {
 // Sam Squire
 var template = {
 	"data": [
+	"div.blah div.blah div.blah 'hi'",
+	"div.blah div.blah div.blah 'yellow'",
 	"-ul li span p 'hi'",
 	"ul li span p 'two'",
 	"-ul li span p 'three'",
@@ -83,8 +85,22 @@ function renderFlatHtml(template) {
 	var memo = {};
 	var subChildren = [];
 	var lastChildren = [];
-	var freshNode = false;
+	var childrenLookups = {};
+	var created = {};
+	var done = {};
+	
 	for (let i = 0 ; i < data.length ; i++) {
+		var currentLine = data[i];
+		var textNodes = currentLine.split("'");
+		var processingNodes = textNodes[0].split(" ");
+		for (let token of processingNodes) {
+			created[token] = false;
+			console.log("Marking", token, "as not created");
+		}
+	}
+
+	for (let i = 0 ; i < data.length ; i++) {
+		var pivot = false;
 		var currentLine = data[i];
 		var textNodes = currentLine.split("'");
 		var pendingText = null;
@@ -93,22 +109,59 @@ function renderFlatHtml(template) {
 		}
 		var processingNodes = textNodes[0].split(" ");
 		processingNodes.pop();
-		console.log(processingNodes);
+		// console.log(processingNodes);
 		
 		if (memo.hasOwnProperty(textNodes[0])) {
-		
+			
 		} else {
 			memo[textNodes[0]] = [];
 		}
-		
+		var freshNode = false;
 
+		for (let j = 0; j < processingNodes.length ; j++) {
+			var path = "";
+			for (var m = 0 ; m <= j ; m++) {
+				path += processingNodes[m].replace("-", "") + " ";
+				
+				if (!childrenLookups.hasOwnProperty(path)) {
+					childrenLookups[path] = [];
+					done[path] = false;
+					// console.log("Creating", path);
+				
+				}
+			}	
+					
+			// console.log(path);
+			
+		}
 		
+		if (processingNodes[0].charAt(0) == "-") {
+			freshNode = true;
+		}
+		var line_indexes = [];
 		
-		for (let j = processingNodes.length - 1; j >= 0 ; j--) {
+		for (let j = 0; j < processingNodes.length ; j++) {
+			var path = "";
+			for (var m = 0 ; m <= j ; m++) {
+				path += processingNodes[m].replace("-", "") + " ";
+			}
+
+			var nextPath = "";
+			for (var m = 0 ; m <= j + 1 && m < processingNodes.length ; m++) {
+				nextPath += processingNodes[m].replace("-", "") + " ";
+			}
+
+			var end = false;
+			if (nextPath == path) {
+				end = true;
+			}
+			console.log("path", path, "nextpath", nextPath);
+			
 			
 			var elements = processingNodes[j];
-			console.log("elements", elements);
+			console.log(elements);
 			var siblingRoot = processingNodes[processingNodes.length - 2];
+			
 			
 			if (memo.hasOwnProperty(siblingRoot)) {
 		
@@ -119,24 +172,53 @@ function renderFlatHtml(template) {
 			if (elements.charAt(0) == "-") {
 				elements = elements.substring(1);
 				freshNode = true;
+				var path = "";
+				for (let j = 0; j < processingNodes.length ; j++) {
+					path += processingNodes[j].replace("-", "") + " ";
+					console.log("RESETTING", path);
+					childrenLookups[path] = [];
+					
+					created[processingNodes[j]] = false;
+					done[path] = false;
+					
+				}
 			}
 			var attributes = elements.split(".");
 			var className = attributes[1];
 			var element = attributes[0];
 
-			if (pendingText != null) {
+			if (element == siblingRoot) {
+				pivotPoint = path;
+				
+			}
+			
+			if (end == true) {
 				var textNode = React.createElement(element, {key: pendingText, "className": className}, pendingText);
-				lastChildren = [textNode];
-				pendingText = null;
-			} else if (j == 0) {
-				children.push(React.createElement(element, {}, lastChildren));
-			} else {
-				lastChildren = [React.createElement(element, {}, lastChildren.slice())];
+				childrenLookups[path].push(textNode);
+				console.log(childrenLookups[path]);
+				created[element] = true;
+				done[path] = true;
+			} else if (j == 0 && done[path] == false) {
+				console.log("Creating parent", path);
+				childrenLookups[nextPath] = [];
+				children.push(React.createElement(element, {className: className}, childrenLookups[nextPath]));
+				created[element] = true;
+				done[path] = true;
+			} else if (done[path] === true) {
+				console.log("Already created");
+				console.log(element);
+				
+			} else if (done[path] == false) {
+				childrenLookups[path].push(React.createElement(element, {className: className}, childrenLookups[nextPath]));
+				done[path] = true;
+				
+				
 			}
 		}
+		
 	}
 	
-	return React.createElement("div", {}, children.slice());
+	return React.createElement("div", {}, children);
 }
 
 var output = document.getElementById("output");
