@@ -29,8 +29,6 @@
 	#output {
 		width: 100%;
 		margin-top: 0;
-		margin-left: 30vw;
-		overflow: scroll;
 		clear: both;
 	}
 	.folder-list {
@@ -229,20 +227,23 @@ function shuffle(a) {
 var template = {
     "data": [
         "-div =My post",
+        "-div span = Name",
+        "div input(type:text,name:name)", 
+        "-div span = Age",
+        "div input(type:text,age)",
+		"div button(type:submit) = Submit", 
         "-div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
         "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
         "div.mesgs div.mesg_history div.received_msg span.blah =elements ",
         "div.mesgs div.mesg_history div.received_msg b =go down a treat",
-		
-		"-div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
+        "-div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
         "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
         "div.mesgs div.mesg_history div.received_msg span.blah =elements ",
         "div.mesgs div.mesg_history div.received_msg b =go down a treat"
-		
     ]
 }
 
@@ -370,14 +371,13 @@ function renderFlatHtml(template) {
 				
 			}
 			console.log(path);
+			if (path == "div button(type:submit) ") { debugger }
 			if (path == "div.mesgs ") {  }
 			if (path == "div.incoming_msg_img img(src=https://ptetutorials.com/images/userprofile.png) ") {  }
 
 			if (end == true) {
 				var textNode = "";
-				if (pendingText != null) {
-					var textNode = React.createElement(element, {key: Math.random(), "className": className}, pendingText);
-				} else {
+				if (processingNodes[j].indexOf("(") != -1) {
 					var nodeData = processingNodes[j].split("(");
 					var kvs = nodeData[1].split(")")[0].split(",");
 					var attrs = {"className": className, key: Math.random()};
@@ -387,7 +387,9 @@ function renderFlatHtml(template) {
 						var sides = kv.split(":");
 						attrs[sides[0]] = sides.slice(1).join(":");
 					}
-					textNode = React.createElement(nodeData[0], attrs);
+					textNode = React.createElement(nodeData[0].replace("-", ""), attrs, pendingText || undefined);
+				} else {
+					textNode = React.createElement(element, {key: Math.random(), "className": className}, pendingText);
 				}
 				if (previousPath != "") {
 					childrenLookups[previousPath].push(textNode);
