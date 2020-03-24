@@ -232,13 +232,14 @@ var template = {
         "-div span = Age",
         "div input(type:text,age)",
 		"div button(type:submit) = Submit", 
-        "-div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
+        "^div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
         "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
         "div.mesgs div.mesg_history div.received_msg span.blah =elements ",
         "div.mesgs div.mesg_history div.received_msg b =go down a treat",
-        "-div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
+		
+        "^div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
         "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
         "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
@@ -262,11 +263,10 @@ function renderFlatHtml(template) {
 	for (let i = 0 ; i < data.length ; i++) {
 		var currentLine = data[i];
 		var textNodes = currentLine.split("=");
-		console.log(textNodes);
+		
 		var processingNodes = textNodes[0].split(" ");
 		for (let token of processingNodes) {
 			created[token] = false;
-			console.log("Marking", token, "as not created");
 		}
 	}
 
@@ -278,67 +278,66 @@ function renderFlatHtml(template) {
 		if (textNodes.length > 0) {
 			pendingText = textNodes[1];
 		}
-		console.log(textNodes);
+		
 		var processingNodes = textNodes[0].split(" ");
 		if (processingNodes[processingNodes.length - 1] == "") {
 			processingNodes.pop();
 		}
-		console.log(processingNodes);
 		
-		if (memo.hasOwnProperty(textNodes[0])) {
-			
-		} else {
-			memo[textNodes[0]] = [];
-		}
-		var freshNode = false;
 
+		var freshNode = false;
+		
 		for (let j = 0; j < processingNodes.length ; j++) {
 			var path = "";
 			for (var m = 0 ; m < processingNodes.length ; m++) {
-				path += processingNodes[m].replace("-", "") + " ";
+				path += processingNodes[m].replace("-", "").replace("^", "") + " ";
 				
 				if (!childrenLookups.hasOwnProperty(path)) {
 					childrenLookups[path] = [];
 					done[path] = false;
-					// console.log("Creating", path);
+					
 				
 				}
 			}	
 					
-			// console.log(path);
+			
 			
 		}
 		
 		if (processingNodes[0].charAt(0) == "-") {
 			freshNode = true;
 		}
+		
 		var line_indexes = [];
+		var sharedNode = false;
 		
 		for (let j = 0; j < processingNodes.length ; j++) {
+			var sharedBeginning = false;
+			
 			var path = "";
 			for (let m = 0 ; m <= j; m++) {
-				path += processingNodes[m].replace("-", "") + " ";
+				path += processingNodes[m].replace("-", "").replace("^", "") + " ";
 			}
 			
 			var previousPath = "";
 			for (var m = 0 ; m <= j - 1 ; m++) {
-				previousPath += processingNodes[m].replace("-", "") + " ";
+				previousPath += processingNodes[m].replace("-", "").replace("^", "") + " ";
 			}
 			
 			var nextPath = "";
 			for (var m = 0 ; m <= j + 1 && m < processingNodes.length ; m++) {
-				nextPath += processingNodes[m].replace("-", "") + " ";
+				nextPath += processingNodes[m].replace("-", "").replace("^", "") + " ";
 			}
 
 			var end = false;
 			if (nextPath == path) {
 				end = true;
 			}
-			console.log("path", path, "nextpath", nextPath);
+			
 			
 			
 			var elements = processingNodes[j];
-			console.log(elements);
+			
 			var siblingRoot = processingNodes[processingNodes.length - 2];
 			
 			
@@ -347,16 +346,39 @@ function renderFlatHtml(template) {
 			} else {
 				memo[siblingRoot] = [];
 			}
+			if (elements.charAt(0) == "^") {
+				sharedBeginning = true;
+				for (var key in childrenLookups) {
+					
+					
+					if (key.split(" ").length >= 3) {
+					
+						childrenLookups[key] = [];
+						created[processingNodes[j]] = false;
+						done[key] = false;
+					}
+					
+				}
+			}
+			if (elements.charAt(0) == "+") {
+				
+				sharedNode = true;
+				for (var key in childrenLookups) {
+					if (key.indexOf(elements) != -1) {
+						
+					}
+				}
+			}
+			
 			
 			if (elements.charAt(0) == "-") {
 				elements = elements.substring(1);
 				freshNode = true;
 				var subpath = "";
 				for (var key in childrenLookups) {
-					subpath += processingNodes[j].replace("-", "") + " ";
-					console.log("RESETTING", key);
+					
 					childrenLookups[key] = [];
-					console.log("reset", JSON.stringify(childrenLookups));
+					
 					created[processingNodes[j]] = false;
 					done[key] = false;
 					
@@ -364,15 +386,14 @@ function renderFlatHtml(template) {
 			}
 			var attributes = elements.split(".");
 			var className = attributes[1];
-			var element = attributes[0];
+			var element = attributes[0].replace("+", "").replace("^", "");
 
 			if (element == siblingRoot) {
 				pivotPoint = path;
 				
 			}
-			console.log(path);
-			if (path == "div button(type:submit) ") { debugger }
-			if (path == "div.mesgs ") {  }
+			
+			if (path == "^div.mesgs ") { debugger  }
 			if (path == "div.incoming_msg_img img(src=https://ptetutorials.com/images/userprofile.png) ") {  }
 
 			if (end == true) {
@@ -381,51 +402,71 @@ function renderFlatHtml(template) {
 					var nodeData = processingNodes[j].split("(");
 					var kvs = nodeData[1].split(")")[0].split(",");
 					var attrs = {"className": className, key: Math.random()};
-					console.log(kvs);
+					
 					
 					for (var kv of kvs) {
 						var sides = kv.split(":");
 						attrs[sides[0]] = sides.slice(1).join(":");
 					}
-					textNode = React.createElement(nodeData[0].replace("-", ""), attrs, pendingText || undefined);
+					textNode = React.createElement(nodeData[0].replace("-", "").replace("+", "").replace("^", ""), attrs, pendingText || undefined);
 				} else {
 					textNode = React.createElement(element, {key: Math.random(), "className": className}, pendingText);
 				}
 				if (previousPath != "") {
 					childrenLookups[previousPath].push(textNode);
 				}
-				console.log(childrenLookups[path]);
+				
 				created[element] = true;
 				done[path] = true;
 				if (j == 0) {
 					children.push(textNode);
 				}
+				
+			} else if (sharedBeginning) {
+				
+					
+					if (done[path] === false) {
+						// childrenLookups[nextPath] = [];
+						children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
+						
+						
+						done[path] = true;
+						
+						childrenLookups[""] = childrenLookups[path]
+											
+					} else {
+						
+					}
+					
+				
+				
 			} else if (j == 0 && freshNode) {
 			
 				
-				console.log("reset", JSON.stringify(childrenLookups));
 				
-				console.log("Creating parent", path);
+				
+				
 				childrenLookups[nextPath] = [];
 				children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
 				created[element] = true;
 				done[path] = true;
 				
-				
-				
-			
-				
-				
+			} else if (sharedNode) {
+				childrenLookups[path] = [];
+				childrenLookups[previousPath].push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
 				
 			} else if (done[path] === true) {
-				console.log("Already created", path);
-				console.log(element);
+				
+				
 				
 				
 			} else {
-					if (previousPath == "") { debugger }
+					
+					
+															
 					childrenLookups[previousPath].push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
 					done[path] = true;
+				
 				
 				
 				
