@@ -53,7 +53,7 @@ It should generate HTML like this:
 
 # The ^ symbol
 
-The ^ symbol is the shared parent operator. The following:
+The ^ symbol is the shared parent operator. The following shares div.mesgs as a common parent.
 
 ```
 {
@@ -109,9 +109,9 @@ Generates the following HTML:
 </div>
 ```
 
-# The + symbol
+# The new child operator (+ symbol)
 
-The + symbol is the new child operator. It creates a new element from that point onwards.
+The + symbol is the new child operator. It creates a new element from that point onwards. Note how div.review are new elements.
 
 ```
 {
