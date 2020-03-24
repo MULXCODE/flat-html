@@ -309,24 +309,24 @@ function renderFlatHtml(template) {
 		}
 		
 		var line_indexes = [];
-		var sharedNode = false;
+		
 		
 		for (let j = 0; j < processingNodes.length ; j++) {
 			var sharedBeginning = false;
-			
+			var sharedNode = false;
 			var path = "";
 			for (let m = 0 ; m <= j; m++) {
-				path += processingNodes[m].replace("-", "").replace("^", "") + " ";
+				path += processingNodes[m].replace("-", "").replace("^", "").replace("+","") + " ";
 			}
 			
 			var previousPath = "";
 			for (var m = 0 ; m <= j - 1 ; m++) {
-				previousPath += processingNodes[m].replace("-", "").replace("^", "") + " ";
+				previousPath += processingNodes[m].replace("-", "").replace("^", "").replace("+", "") + " ";
 			}
 			
 			var nextPath = "";
 			for (var m = 0 ; m <= j + 1 && m < processingNodes.length ; m++) {
-				nextPath += processingNodes[m].replace("-", "").replace("^", "") + " ";
+				nextPath += processingNodes[m].replace("-", "").replace("^", "").replace("+", "") + " ";
 			}
 
 			var end = false;
@@ -340,12 +340,6 @@ function renderFlatHtml(template) {
 			
 			var siblingRoot = processingNodes[processingNodes.length - 2];
 			
-			
-			if (memo.hasOwnProperty(siblingRoot)) {
-		
-			} else {
-				memo[siblingRoot] = [];
-			}
 			if (elements.charAt(0) == "^") {
 				sharedBeginning = true;
 				for (var key in childrenLookups) {
@@ -441,11 +435,7 @@ function renderFlatHtml(template) {
 				
 				
 			} else if (j == 0 && freshNode) {
-			
-				
-				
-				
-				
+		
 				childrenLookups[nextPath] = [];
 				children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
 				created[element] = true;
@@ -454,7 +444,8 @@ function renderFlatHtml(template) {
 			} else if (sharedNode) {
 				childrenLookups[path] = [];
 				childrenLookups[previousPath].push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
-				
+				done[path] = true;
+		
 			} else if (done[path] === true) {
 				
 				
