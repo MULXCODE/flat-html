@@ -1,8 +1,42 @@
 # flat-html
 
-flat-html is an alternative to templating and helpful in debugging complicated HTML. You can use cursor tools of your text editor to rename classes in columns mode.
+flat-html is an alternative to templating and generating complicated HTML.
 
-This repository renders HTML from a flatter representation of HTML that looks like this:
+You write a series of statements of what each element should be set to.
+
+Such as
+
+```
+{
+    "data": [
+        "-h1 =My post",
+        "^ul li = I am list item 1",
+        "ul li = I am list item 2",
+        "ul li = I am list item 3",
+        "-ul li = I am a different list item 1",
+        "ul li = I am a different list item 2"
+	]
+}
+```
+
+Generates:
+
+```
+<div>
+    <h1>My post</h1>
+    <ul>
+        <li> I am list item 1</li>
+        <li> I am list item 2</li>
+        <li> I am list item 3</li>
+    </ul>
+    <ul>
+        <li> I am a different list item 1</li>
+        <li> I am a different list item 2</li>
+    </ul>
+</div>
+```
+
+Here's a more involved example:
 
 ```
 {
