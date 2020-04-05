@@ -211,7 +211,7 @@ Generates the following HTML:
 
 Open `flat-html.html` in your browser and give it a whirl. There's an editor at the top of the screen so you can see what your flat HTML is generating below.
 
-# Service side usage
+# Server side usage
 
 You can use flat html in a server. Here's a flask example. [Unflatten can be found here](https://github.com/samsquire/forum/blob/master/app.py#L243).
 
