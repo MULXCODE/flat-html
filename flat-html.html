@@ -19,27 +19,27 @@
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" type="text/css" rel="stylesheet">
 
-	<style>
-	#input {
-		float: left;
-		top: 0px;
-		width: 100vw;
-		height: 50vh;
-	}
-	#output {
-		width: 100%;
-		margin-top: 0;
-		clear: both;
-	}
-	.folder-list {
-		border: 3px inset;
-	}
-	.email-list {
-		border: 3px inset;
-	}
-	.mail-preview {
-		border: 3px inset;
-	}
+    <style>
+    #input {
+        float: left;
+        top: 0px;
+        width: 100vw;
+        height: 50vh;
+    }
+    #output {
+        width: 100%;
+        margin-top: 0;
+        clear: both;
+    }
+    .folder-list {
+        border: 3px inset;
+    }
+    .email-list {
+        border: 3px inset;
+    }
+    .mail-preview {
+        border: 3px inset;
+    }
 .important { color: #336699; }
 .author { float: left; width: 200px; }
 .message {float: left; }
@@ -199,11 +199,32 @@ height: 516px;
 overflow-y: auto;
 }
 
-	</style>
+.controls div {
+float: left;
+
+.controls input {
+display: inline;
+
+}
+.controls label {
+display: inline;
+
+}
+
+    </style>
 
 </head>
 
 <body>
+<div class="controls">
+<div>Ordering</div>
+<div>
+<input type="radio" id="htmlthentext" name="gender" value="htmlthentext">
+<label for="htmlthentext">html = text</label><br></div>
+<div><input type="radio" id="textthenhtml" name="gender" checked value="textthenhtml">
+<label for="textthenhtml">text = html</label><br></div>
+</div>
+
 <textarea id="input"></textarea>
 <div id="output"></div>
 <script type="text/javascript">
@@ -226,247 +247,294 @@ function shuffle(a) {
 // Sam Squire
 var template = {
     "data": [
-        "-div =My post",
-        "-div span = Name",
-        "div input(type:text,name:name)", 
-        "-div span = Age",
-        "div input(type:text,age)",
-		"div button(type:submit) = Submit", 
+        "My post                =-div ",
+        " Name                  =-div form(method:post) span ",
+        "div form(method:post) input(type:text,name:name)",
+        " Age                   =div form(method:post) span ",
+        "div form(method:post) input(type:text,age)",
+        " Submit                =div form(method:post) button(type:submit) ",
         "^div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
-        "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
-        "div.mesgs div.mesg_history div.received_msg span.blah =elements ",
-        "div.mesgs div.mesg_history div.received_msg b =go down a treat",
-		
+        "My post                =div.mesgs div.mesg_history div.received_msg div.received_withd_msg p ",
+        "time                   =div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date ",
+        "Mixed                  =div.mesgs div.mesg_history div.received_msg span.blah ",
+        "elements               =div.mesgs div.mesg_history div.received_msg span.blah ",
+        "go down a treat        =div.mesgs div.mesg_history div.received_msg b ",
         "^div.mesgs div.mesg_history div.incoming_msg_img img(src:https://ptetutorials.com/images/user-profile.png,alt:sam)",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg p =My post",
-        "div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date =time",
-        "div.mesgs div.mesg_history div.received_msg span.blah =Mixed ",
-        "div.mesgs div.mesg_history div.received_msg span.blah =elements ",
-        "div.mesgs div.mesg_history div.received_msg b =go down a treat"
+        "My post                =div.mesgs div.mesg_history div.received_msg div.received_withd_msg p ",
+        "time                   =div.mesgs div.mesg_history div.received_msg div.received_withd_msg span.time_date ",
+        "Mixed                  =div.mesgs div.mesg_history div.received_msg span.blah ",
+        "elements               =div.mesgs div.mesg_history div.received_msg span.blah ",
+        "go down a treat        =div.mesgs div.mesg_history div.received_msg b "
     ]
 }
 
-function renderFlatHtml(template) {
-	var data = template["data"];
-	
-	var children = [];
-	var memo = {};
-	var subChildren = [];
-	var lastChildren = [];
-	var childrenLookups = {};
-	var created = {};
-	var done = {};
-	var childs = {};
-	
-	for (let i = 0 ; i < data.length ; i++) {
-		var currentLine = data[i];
-		var textNodes = currentLine.split("=");
-		
-		var processingNodes = textNodes[0].split(" ");
-		for (let token of processingNodes) {
-			created[token] = false;
-		}
-	}
+function createAttrs(processingNodes, j, className) {
+    var attrs = {};
+    var elementName;
+    var nodeData = processingNodes[j].split("(");
+    elementName = nodeData[0].split(".")[0];
+    if (processingNodes[j].indexOf("(") != -1) {
+        
+        var kvs = nodeData[1].split(")")[0].split(",");
+        attrs = {"className": className, key: Math.random()};
+        
+        
+        for (var kv of kvs) {
+            var sides = kv.split(":");
+            attrs[sides[0]] = sides.slice(1).join(":");
+        }
+    } else {
+        attrs["className"] = className;
+        attrs["key"] = Math.random();
+    }
+    return {attrs: attrs, elementName: elementName};
+}
 
-	for (let i = 0 ; i < data.length ; i++) {
-		var pivot = false;
-		var currentLine = data[i];
-		var textNodes = currentLine.split("=");
-		var pendingText = null;
-		if (textNodes.length > 0) {
-			pendingText = textNodes[1];
-		}
-		
-		var processingNodes = textNodes[0].split(" ");
-		if (processingNodes[processingNodes.length - 1] == "") {
-			processingNodes.pop();
-		}
-		
+function renderFlatHtml(template, orderMode) {
+    var data = template["data"];
+    
+    var children = [];
+    var memo = {};
+    var subChildren = [];
+    var lastChildren = [];
+    var childrenLookups = {};
+    var created = {};
+    var done = {};
+    var childs = {};
+    var textIndex = 1;
+    var dataIndex = 0;
+    if (orderMode == "htmlFirst") {
+            textIndex = 1;
+            dataIndex = 0;
+    } else if (orderMode == "textFirst") {
+        textIndex = 0;
+        dataIndex = 1;
+    }
+    
+    for (let i = 0 ; i < data.length ; i++) {
+        var currentLine = data[i];
+        var textNodes = currentLine.split("=");
+                
+        console.log(textNodes);
+        var processingNodes;
+        if (textNodes.length == 1) {
+            processingNodes = textNodes[0].split(" ");
+        } else {
+            processingNodes = textNodes[dataIndex].split(" ");
+        }
+        for (let token of processingNodes) {
+            created[token] = false;
+        }
+    }
 
-		var freshNode = false;
-		
-		for (let j = 0; j < processingNodes.length ; j++) {
-			var path = "";
-			for (var m = 0 ; m < processingNodes.length ; m++) {
-				path += processingNodes[m].replace("-", "").replace("^", "") + " ";
-				
-				if (!childrenLookups.hasOwnProperty(path)) {
-					childrenLookups[path] = [];
-					done[path] = false;
-					
-				
-				}
-			}	
-					
-			
-			
-		}
-		
-		if (processingNodes[0].charAt(0) == "-") {
-			freshNode = true;
-		}
-		
-		var line_indexes = [];
-		
-		
-		for (let j = 0; j < processingNodes.length ; j++) {
-			var sharedBeginning = false;
-			var sharedNode = false;
-			var path = "";
-			for (let m = 0 ; m <= j; m++) {
-				path += processingNodes[m].replace("-", "").replace("^", "").replace("+","") + " ";
-			}
-			
-			var previousPath = "";
-			for (var m = 0 ; m <= j - 1 ; m++) {
-				previousPath += processingNodes[m].replace("-", "").replace("^", "").replace("+", "") + " ";
-			}
-			
-			var nextPath = "";
-			for (var m = 0 ; m <= j + 1 && m < processingNodes.length ; m++) {
-				nextPath += processingNodes[m].replace("-", "").replace("^", "").replace("+", "") + " ";
-			}
+    for (let i = 0 ; i < data.length ; i++) {
+        var pivot = false;
+        var currentLine = data[i];
+        var textNodes = currentLine.split("=");
+        var pendingText = null;
+        if (textNodes.length > 0) {
+            pendingText = textNodes[textIndex];
+            console.log(pendingText);
+        }
+        
+        
+        var processingNodes;
+        if (textNodes.length == 1) {
+            processingNodes = textNodes[0].split(" ");
+        } else {
+            processingNodes = textNodes[dataIndex].split(" ");
+        }
+        if (processingNodes[processingNodes.length - 1] == "") {
+            processingNodes.pop();
+        }
+        if (textNodes.length == 1) {
+            pendingText = null;
+        }
+        
 
-			var end = false;
-			if (nextPath == path) {
-				end = true;
-			}
-			
-			
-			
-			var elements = processingNodes[j];
-			
-			var siblingRoot = processingNodes[processingNodes.length - 2];
-			
-			if (elements.charAt(0) == "^") {
-				sharedBeginning = true;
-				for (var key in childrenLookups) {
-					
-					
-					if (key.split(" ").length >= 3) {
-					
-						childrenLookups[key] = [];
-						created[processingNodes[j]] = false;
-						done[key] = false;
-					}
-					
-				}
-			}
-			if (elements.charAt(0) == "+") {
-				
-				sharedNode = true;
-				for (var key in childrenLookups) {
-					if (key.indexOf(elements) != -1) {
-						
-					}
-				}
-			}
-			
-			
-			if (elements.charAt(0) == "-") {
-				elements = elements.substring(1);
-				freshNode = true;
-				var subpath = "";
-				for (var key in childrenLookups) {
-					
-					childrenLookups[key] = [];
-					
-					created[processingNodes[j]] = false;
-					done[key] = false;
-					
-				}
-			}
-			var attributes = elements.split(".");
-			var className = attributes[1];
-			var element = attributes[0].replace("+", "").replace("^", "");
+        var freshNode = false;
+        
+        for (let j = 0; j < processingNodes.length ; j++) {
+            var path = "";
+            for (var m = 0 ; m < processingNodes.length ; m++) {
+                path += processingNodes[m].replace("-", "").replace("^", "") + " ";
+                
+                if (!childrenLookups.hasOwnProperty(path)) {
+                    childrenLookups[path] = [];
+                    done[path] = false;
+                    
+                
+                }
+            }   
+                    
+            
+            
+        }
+        
+        if (processingNodes[0].charAt(0) == "-") {
+            freshNode = true;
+        }
+        
+        var line_indexes = [];
+        
+        
+        for (let j = 0; j < processingNodes.length ; j++) {
+            var sharedBeginning = false;
+            var sharedNode = false;
+            var path = "";
+            for (let m = 0 ; m <= j; m++) {
+                path += processingNodes[m].replace("-", "").replace("^", "").replace("+","") + " ";
+            }
+            
+            var previousPath = "";
+            for (var m = 0 ; m <= j - 1 ; m++) {
+                previousPath += processingNodes[m].replace("-", "").replace("^", "").replace("+", "") + " ";
+            }
+            
+            var nextPath = "";
+            for (var m = 0 ; m <= j + 1 && m < processingNodes.length ; m++) {
+                nextPath += processingNodes[m].replace("-", "").replace("^", "").replace("+", "") + " ";
+            }
 
-			if (element == siblingRoot) {
-				pivotPoint = path;
-				
-			}
-			
-			if (path == "^div.mesgs ") { debugger  }
-			if (path == "div.incoming_msg_img img(src=https://ptetutorials.com/images/userprofile.png) ") {  }
+            var end = false;
+            if (nextPath == path) {
+                end = true;
+            }
+            
+            
+            
+            var elements = processingNodes[j];
+            
+            var siblingRoot = processingNodes[processingNodes.length - 2];
+            
+            if (elements.charAt(0) == "^") {
+                sharedBeginning = true;
+                for (var key in childrenLookups) {
+                    
+                    
+                    if (key.split(" ").length >= 3) {
+                    
+                        childrenLookups[key] = [];
+                        created[processingNodes[j]] = false;
+                        done[key] = false;
+                    }
+                    
+                }
+            }
+            if (elements.charAt(0) == "+") {
+                
+                sharedNode = true;
+                for (var key in childrenLookups) {
+                    if (key.indexOf(elements) != -1) {
+                        
+                    }
+                }
+            }
+            
+            
+            if (elements.charAt(0) == "-") {
+                elements = elements.substring(1);
+                freshNode = true;
+                var subpath = "";
+                for (var key in childrenLookups) {
+                    
+                    childrenLookups[key] = [];
+                    
+                    created[processingNodes[j]] = false;
+                    done[key] = false;
+                    
+                }
+            }
+            var attributes = elements.split(".");
+            var className = attributes[1];
+            var element = attributes[0].replace("+", "").replace("^", "");
 
-			if (end == true) {
-				var textNode = "";
-				if (processingNodes[j].indexOf("(") != -1) {
-					var nodeData = processingNodes[j].split("(");
-					var kvs = nodeData[1].split(")")[0].split(",");
-					var attrs = {"className": className, key: Math.random()};
-					
-					
-					for (var kv of kvs) {
-						var sides = kv.split(":");
-						attrs[sides[0]] = sides.slice(1).join(":");
-					}
-					textNode = React.createElement(nodeData[0].replace("-", "").replace("+", "").replace("^", ""), attrs, pendingText || undefined);
-				} else {
-					textNode = React.createElement(element, {key: Math.random(), "className": className}, pendingText);
-				}
-				if (previousPath != "") {
-					childrenLookups[previousPath].push(textNode);
-				}
-				
-				created[element] = true;
-				done[path] = true;
-				if (j == 0) {
-					children.push(textNode);
-				}
-				
-			} else if (sharedBeginning) {
-				
-					
-					if (done[path] === false) {
-						// childrenLookups[nextPath] = [];
-						children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
-						
-						
-						done[path] = true;
-						
-						childrenLookups[""] = childrenLookups[path]
-											
-					} else {
-						
-					}
-					
-				
-				
-			} else if (j == 0 && freshNode) {
-		
-				childrenLookups[nextPath] = [];
-				children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
-				created[element] = true;
-				done[path] = true;
-				
-			} else if (sharedNode) {
-				childrenLookups[path] = [];
-				childrenLookups[previousPath].push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
-				done[path] = true;
-		
-			} else if (done[path] === true) {
-				
-				
-				
-				
-			} else {
-					
-					
-															
-					childrenLookups[previousPath].push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
-					done[path] = true;
-				
-				
-				
-				
-			}
-		}
-		
-	}
-	
-	return React.createElement("div", {}, children);
+            if (element == siblingRoot) {
+                pivotPoint = path;
+                
+            }
+            
+            if (path == "^div.mesgs ") { debugger  }
+            if (path == "div.incoming_msg_img img(src=https://ptetutorials.com/images/userprofile.png) ") {  }
+
+            if (end == true) {
+                var textNode = "";
+                if (processingNodes[j].indexOf("(") != -1) {
+                    var attrCreation =  createAttrs(processingNodes, j, className);
+                    var attrs = attrCreation.attrs;
+                    textNode = React.createElement(attrCreation.elementName.replace("-", "").replace("+", "").replace("^", ""), attrs, pendingText || undefined);
+                } else {
+                    textNode = React.createElement(element, {key: Math.random(), "className": className}, pendingText);
+                }
+                
+                
+                
+                if (previousPath != "") {
+                    childrenLookups[previousPath].push(textNode);
+                }
+                
+                created[element] = true;
+                done[path] = true;
+                if (j == 0) {
+                    children.push(textNode);
+                }
+                
+            } else if (sharedBeginning) {
+                
+                    
+                    if (done[path] === false) {
+                        // childrenLookups[nextPath] = [];
+                        children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
+                        
+                        
+                        done[path] = true;
+                        
+                        childrenLookups[""] = childrenLookups[path]
+                                            
+                    } else {
+                        
+                    }
+                    
+                
+                
+            } else if (j == 0 && freshNode) {
+        
+                childrenLookups[nextPath] = [];
+                children.push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
+                created[element] = true;
+                done[path] = true;
+                
+            } else if (sharedNode) {
+                
+                childrenLookups[path] = [];
+                childrenLookups[previousPath].push(React.createElement(element, {key: Math.random(), className: className}, childrenLookups[path]));
+                done[path] = true;
+        
+            } else if (done[path] === true) {
+                
+                
+                
+                
+            } else {
+                    
+                    
+                    var attrCreation =  createAttrs(processingNodes, j, className);
+                    var attrs = attrCreation.attrs;
+                    
+                    console.log(currentLine);
+                    console.log(childrenLookups);
+                    childrenLookups[previousPath].push(React.createElement(attrCreation.elementName, attrs, childrenLookups[path]));
+                    done[path] = true;
+                
+                
+                
+                
+            }
+        }
+        
+    }
+    
+    return React.createElement("div", {}, children);
 }
 
 var output = document.getElementById("output");
@@ -474,15 +542,41 @@ var output = document.getElementById("output");
 document.getElementById("input").value = JSON.stringify(template, null, 4);
 var inputField = document.getElementById("input");
 inputField.addEventListener('change', function () {
-	
-	template = JSON.parse(inputField.value);
-	rerender();
+    
+    template = JSON.parse(inputField.value);
+    rerender();
 });
+var orderMode = "textFirst";
 function rerender() {
-	
-	ReactDOM.render(renderFlatHtml(template), output);
+    
+    ReactDOM.render(renderFlatHtml(template, orderMode), output);
 }
 rerender();
+document.getElementById("htmlthentext").addEventListener("click", function () {
+    orderMode = "htmlFirst";
+    changeOrdering();
+	 document.getElementById("input").value = JSON.stringify(template, null, 4);
+    rerender();
+});
+function changeOrdering() {
+	for (var i = 0 ; i < template.data.length ; i++) {
+        var data = template.data[i];
+        var components = data.split("=");
+        if (components.length == 2) {
+            template.data[i] = components[1] + "=" + components[0];
+            
+        } else {
+            
+        }
+    }
+}
+
+document.getElementById("textthenhtml").addEventListener("click", function () {
+    orderMode = "textFirst";
+    changeOrdering();
+    document.getElementById("input").value = JSON.stringify(template, null, 4);
+    rerender();
+});
 </script>
 
 
