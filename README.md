@@ -213,7 +213,7 @@ Open `flat-html.html` in your browser and give it a whirl. There's an editor at 
 
 # Server side usage
 
-You can use flat html in a server. Here's a flask example. [Unflatten can be found here](https://github.com/samsquire/forum/blob/58b37ae346a608ca81eec3d208245c43316f65d9/app.py#L261).
+You can use flat html in a server. Here's a flask example. [Unflatten can be found here](https://github.com/samsquire/forum/blob/fc0a55b0bacdc13346aa3e55ccd0cede6feade9d/app.py#L371).
 
 ![flat-html-serverside](flat-html-serverside.png)
 ![flat-html-output](flat-html-output.png)
